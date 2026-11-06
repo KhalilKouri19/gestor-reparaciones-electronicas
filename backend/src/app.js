@@ -1,0 +1,16 @@
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const reparacionesRoutes = require('./routes/reparacionesRoutes');
+const authRoutes = require('./routes/authRoutes');
+const errorHandler = require('./middlewares/errorHandler');
+const app = express();
+app.use(helmet());
+app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
+app.use(express.json({ limit: '1mb' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok', servicio: 'Gestor de Reparaciones Electrónicas' }));
+app.use('/api/auth', authRoutes);
+app.use('/api/reparaciones', reparacionesRoutes);
+app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
+app.use(errorHandler);
+module.exports = app;

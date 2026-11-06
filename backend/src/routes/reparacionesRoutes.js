@@ -1,0 +1,12 @@
+const express = require('express');
+const controller = require('../controllers/reparacionesController');
+const { verificarToken } = require('../middlewares/authMiddleware');
+const router = express.Router();
+router.get('/seguimiento/:codigo', controller.seguimiento);
+router.use(verificarToken);
+router.get('/', controller.listar);
+router.post('/', controller.registrar);
+router.patch('/:id/estado', controller.cambiarEstado);
+router.put('/:id', controller.editar);
+router.delete('/:id', controller.eliminar);
+module.exports = router;

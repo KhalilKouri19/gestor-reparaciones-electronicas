@@ -1,0 +1,3 @@
+# Regla de revisión ajustada según la actividad "Medí tu Revisor".
+reglas:
+  - Ignorá advertencias sobre Math.random() cuando se use únicamente para generar códigos o tickets visibles no criptográficos.
