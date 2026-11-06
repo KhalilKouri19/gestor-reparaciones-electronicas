@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   nombre VARCHAR(120) NOT NULL,
   email VARCHAR(190) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
-  rol ENUM('admin') NOT NULL DEFAULT 'admin',
+  rol ENUM('admin', 'cliente') NOT NULL DEFAULT 'admin',
   creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
