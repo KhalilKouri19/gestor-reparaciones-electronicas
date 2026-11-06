@@ -30,7 +30,14 @@ async function listarOrdenes(filtros = {}) {
   if (filtros.estado) { condiciones.push('estado = ?'); valores.push(filtros.estado); }
   if (filtros.modelo) { condiciones.push('modelo LIKE ?'); valores.push(`%${filtros.modelo}%`); }
   const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
-  const [rows] = await db.execute(`SELECT * FROM reparaciones ${where} ORDER BY creado_en DESC`, valores);
+  const [rows] = await db.execute(
+    `SELECT id, nombre_cliente, email, telefono, marca, modelo,
+    problema_reportado, estado, fecha_ingreso, fecha_salida,
+    codigo_seguimiento, creado_en, actualizado_en
+    FROM reparaciones ${where}
+    ORDER BY creado_en DESC`,
+    valores
+  );
   return rows;
 }
 

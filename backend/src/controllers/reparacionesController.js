@@ -4,10 +4,31 @@ async function registrar(req, res, next) {
   try { const data = await service.registrar(req.body); return res.status(201).json({ mensaje: 'Orden creada exitosamente', data }); }
   catch (error) { return next(error); }
 }
+
 async function listar(req, res, next) {
-  try { const data = await service.listar({ cliente: req.query.cliente, estado: req.query.estado, modelo: req.query.modelo }); return res.json({ data }); }
-  catch (error) { return next(error); }
+  try {
+    const filtros = {};
+
+    for (const campo of ['cliente', 'estado', 'modelo']) {
+      const valor = req.query[campo];
+
+      if (valor !== undefined && typeof valor !== 'string') {
+        return res.status(400).json({
+          error: `El filtro ${campo} debe ser texto`
+        });
+      }
+
+      filtros[campo] = valor?.trim() || '';
+    }
+
+    const data = await service.listar(filtros);
+
+    return res.json({ data });
+  } catch (error) {
+    return next(error);
+  }
 }
+
 async function seguimiento(req, res, next) {
   try {
     const data = await service.seguimiento(req.params.codigo);

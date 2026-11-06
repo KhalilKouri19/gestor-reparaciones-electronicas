@@ -18,8 +18,13 @@ const db = require('../config/db');
     const hash = await bcrypt.hash(password, 12);
 
     await db.execute(
-      'INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES (?, ?, ?, ?)',
-      [nombre, email, hash, 'cliente']
+    `INSERT INTO usuarios (nombre, email, password_hash, rol)
+    VALUES (?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        nombre = VALUES(nombre),
+        password_hash = VALUES(password_hash),
+        rol = VALUES(rol)`,
+    [nombre, email, hash, 'cliente']
     );
 
     console.log(`Cliente creado correctamente: ${email}`);

@@ -1,12 +1,35 @@
 'use client';
-import { useEffect,useMemo,useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Header from '../../components/Header';
 import { api } from '../../lib/api';
 const initial={nombreCliente:'',email:'',telefono:'',marca:'',modelo:'',problemaReportado:''};
 const estados=['Ingresado','En Diagnóstico','Reparado','Entregado'];
 export default function Admin(){const [rows,setRows]=useState([]);const [form,setForm]=useState(initial);const [filters,setFilters]=useState({cliente:'',estado:'',modelo:''});const [error,setError]=useState('');const [message,setMessage]=useState('');const [loading,setLoading]=useState(true);
 const [autorizado,setAutorizado]=useState(false);
- async function cargar(){try{const q=new URLSearchParams(Object.fromEntries(Object.entries(filters).filter(([,v])=>v)));const r=await api(`/reparaciones?${q}`);setRows(r.data);}catch(e){setError(e.message);if(e.message.toLowerCase().includes('token')||e.message.toLowerCase().includes('autentic')){localStorage.removeItem('gestor_token');window.location.href='/login';}}finally{setLoading(false);}}
+ const cargar = useCallback(async () => {
+  try {
+    const q = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(filters).filter(([, v]) => v)
+      )
+    );
+
+    const r = await api(`/reparaciones?${q}`);
+    setRows(r.data);
+  } catch (e) {
+    setError(e.message);
+
+    if (
+      e.message.toLowerCase().includes('token') ||
+      e.message.toLowerCase().includes('autentic')
+    ) {
+      localStorage.removeItem('gestor_token');
+      window.location.href = '/login';
+    }
+  } finally {
+    setLoading(false);
+  }
+}, [filters]);
  useEffect(() => {
   const token = localStorage.getItem('gestor_token');
 
@@ -36,7 +59,7 @@ const [autorizado,setAutorizado]=useState(false);
     localStorage.removeItem('gestor_token');
     window.location.replace('/login');
   }
-}, []);
+}, [cargar]);
  const stats=useMemo(()=>({total:rows.length,ingresado:rows.filter(x=>x.estado==='Ingresado').length,diagnostico:rows.filter(x=>x.estado==='En Diagnóstico').length,listo:rows.filter(x=>['Reparado','Entregado'].includes(x.estado)).length}),[rows]);
  async function crear(e){e.preventDefault();setError('');setMessage('');try{const r=await api('/reparaciones',{method:'POST',body:JSON.stringify(form)});setMessage(`Orden creada. Código de seguimiento: ${r.data.codigoSeguimiento}`);setForm(initial);await cargar();}catch(e){setError(e.message);}}
  async function cambiar(id,estado){try{await api(`/reparaciones/${id}/estado`,{method:'PATCH',body:JSON.stringify({estado})});setMessage('Estado actualizado.');await cargar();}catch(e){setError(e.message);}}
