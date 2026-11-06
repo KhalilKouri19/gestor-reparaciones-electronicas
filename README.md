@@ -12,7 +12,8 @@ Aplicación web para registrar equipos recibidos por un servicio técnico, admin
 
 ## Funcionalidades
 
-- Inicio de sesión para personal administrador.
+- Inicio de sesión para administradores y clientes.
+- Acceso administrativo restringido a usuarios con rol de administrador.
 - Alta de órdenes con datos del cliente y del dispositivo.
 - Generación en el servidor de códigos `REP-XXXX-0000`.
 - Listado, búsqueda y filtrado de reparaciones.
@@ -130,12 +131,12 @@ Todas las rutas están bajo `/api`.
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | POST | `/auth/login` | Público | Iniciar sesión |
-| GET | `/reparaciones` | JWT | Listar y filtrar órdenes |
-| POST | `/reparaciones` | JWT | Registrar una orden |
+| GET | `/reparaciones` | JWT (admin) | Listar y filtrar órdenes |
+| POST | `/reparaciones` | JWT (admin) | Registrar una orden |
 | GET | `/reparaciones/seguimiento/:codigo` | Público | Consultar estado por código |
-| PATCH | `/reparaciones/:id/estado` | JWT | Actualizar estado |
-| PUT | `/reparaciones/:id` | JWT | Editar datos de una orden |
-| DELETE | `/reparaciones/:id` | JWT | Eliminar una orden |
+| PATCH | `/reparaciones/:id/estado` | JWT (admin) | Actualizar estado |
+| PUT | `/reparaciones/:id` | JWT (admin) | Editar datos de una orden |
+| DELETE | `/reparaciones/:id` | JWT (admin) | Eliminar una orden |
 | GET | `/health` | Público | Comprobar disponibilidad |
 
 Las rutas administrativas requieren un token JWT válido con rol de administrador.
@@ -185,6 +186,7 @@ La función `generarCodigoSeguimiento` genera una identificación visible de la 
 - Las rutas administrativas están protegidas mediante middleware.
 - Las credenciales y claves privadas se configuran mediante variables de entorno.
 - Los archivos `.env` y `.env.local` están excluidos del repositorio mediante `.gitignore`.
+- Los usuarios clientes se crean mediante un script de inicialización; no existe registro público desde la aplicación.
 
 Nunca publiques contraseñas reales, tokens ni secretos.
 
